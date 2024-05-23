@@ -5,6 +5,8 @@ import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 // We will lazily load the components using React.lazy and Suspense
 import { lazy, Suspense } from "react";
 import Loader from "./components/Loader";
+// import Header from "./components/Header";
+const Header = lazy(() => import("./components/Header"));
 const Home = lazy(() => import("./pages/Home"));
 const Search = lazy(() => import("./pages/Search"));
 const Cart = lazy(() => import("./pages/Cart"));
@@ -32,6 +34,7 @@ const App = () => {
   return (
     <Router>
       {/* Header or fixed components like Navbar,Footer */}
+      <Header />
       {/* fallback means till they load what to show */}
       <Suspense fallback={<Loader />}>
         <Routes>
