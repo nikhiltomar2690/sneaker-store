@@ -5,6 +5,7 @@ import { Link } from "react-router-dom";
 
 // so that we can use it in the component
 type CartItemProps = {
+  // any allows us to pass any type of object
   cartItem: any;
 };
 
