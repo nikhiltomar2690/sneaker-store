@@ -1,9 +1,25 @@
 import express from "express";
-import { newUser } from "../controllers/user.js";
+import {
+  deleteUser,
+  getAllUsers,
+  getUser,
+  newUser,
+} from "../controllers/user.js";
 
 const app = express();
 
 // route - /api/v1/user/new
+// // usecase of this route: create a new user
 app.post("/new", newUser);
+
+// route - /api/v1/user/all
+// // usecase of this route : get all users
+app.get("/all", getAllUsers);
+
+// route - /api/v1/user/:id
+// usecase of this route : get user by id
+// app.get("/:id", getUser);
+// app.delete("/:id", deleteUser);
+app.route("/:id").get(getUser).delete(deleteUser);
 
 export default app;
