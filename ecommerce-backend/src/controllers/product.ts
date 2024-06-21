@@ -6,6 +6,8 @@ import ErrorHandler from "../utils/utility-class.js";
 import { rm } from "fs";
 
 export const newProduct = TryCatch(
+  // Request is a generic type, so we need to pass in the types for the body , params and query
+  //  out of the these 3, here we have taken only the body
   async (req: Request<{}, {}, NewProductRequestBody>, res, next) => {
     const { name, price, stock, category } = req.body;
     const photo = req.file;
@@ -30,7 +32,7 @@ export const newProduct = TryCatch(
       price,
       stock,
       category: category.toLowerCase(),
-      photo: photo?.path,
+      photo: photo.path,
     });
 
     return res.status(201).json({

@@ -5,9 +5,15 @@ const storage = multer.diskStorage({
         callback(null, "uploads");
     },
     filename(req, file, callback) {
+        // uuid is used to generate a unique id
         const id = uuid();
+        // extName is used to get the extension of the file
+        // pop gives the last element of the array
         const extName = file.originalname.split(".").pop();
         const fileName = `${id}.${extName}`;
+        // null is for error handling
+        // fileName is the name of the file
+        // this will be stored in the uploads folder
         callback(null, fileName);
     },
 });

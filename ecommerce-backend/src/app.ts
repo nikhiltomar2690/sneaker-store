@@ -20,6 +20,8 @@ app.get("/", (req, res) => {
 app.use("/api/v1/user", userRoutes);
 app.use("/api/v1/product", productRoutes);
 
+// since we are storing the images locally, we need to serve them statically
+// earlier they were being treated as api routes
 app.use("/uploads", express.static("uploads"));
 
 app.use(errorMiddleware);
