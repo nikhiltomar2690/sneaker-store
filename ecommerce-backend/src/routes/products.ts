@@ -4,6 +4,7 @@ import {
   deleteProduct,
   getAdminProducts,
   getAllCategories,
+  getAllProducts,
   getSingleProduct,
   getlatestProducts,
   newProduct,
@@ -17,6 +18,8 @@ const app = express.Router();
 // singleUpload is a middleware that uploads a single file locally
 app.post("/new", adminOnly, singleUpload, newProduct);
 // video time
+// to get all products with filter
+app.get("/all", getAllProducts);
 // GET /api/v1/product/latest for getting the latest 5 products
 app.get("/latest", getlatestProducts);
 // GET /api/v1/product/categories for getting all the categories
