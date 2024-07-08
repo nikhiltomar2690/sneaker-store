@@ -3,6 +3,81 @@ import { Product } from "../models/product.js";
 import ErrorHandler from "../utils/utility-class.js";
 import { rm } from "fs";
 import { myCache } from "../app.js";
+import { invalidatesCache } from "../utils/features.js";
+//Revalidate on New,Update,Delete and New Order
+// bcoz the data will be changed and the cache will be outdated but still its there in the cache
+// so it will display the old data.
+// to get the new data we need to revalidate the cache
+export const getlatestProducts = TryCatch(async (req, res, next) => {
+    let products = [];
+    if (myCache.has("latest-products")) {
+        // (as string) means we are typecasting it to a string
+        // so if it comes undefined then it will be converted to a string
+        products = JSON.parse(myCache.get("latest-products"));
+    }
+    else {
+        // -1 means descending order
+        // 1 means ascending order
+        const products = await Product.find({}).sort({ createdAt: -1 }).limit(5);
+        // set the latest products in the cache
+        // we are storing the products in the cache as a string
+        // because we can only store strings in the cache
+        myCache.set("latest-products", JSON.stringify(products));
+    }
+    return res.status(200).json({
+        success: true,
+        products,
+    });
+});
+//Revalidate on New,Update,Delete and New Order
+export const getAllCategories = TryCatch(async (req, res, next) => {
+    let categories;
+    if (myCache.has("categories")) {
+        categories = JSON.parse(myCache.get("categories"));
+    }
+    else {
+        categories = await Product.distinct("category");
+        myCache.set("categories", JSON.stringify(categories));
+    }
+    return res.status(200).json({
+        success: true,
+        categories,
+    });
+});
+//Revalidate on New,Update,Delete and New Order
+export const getAdminProducts = TryCatch(async (req, res, next) => {
+    let products;
+    if (myCache.has("all-products")) {
+        products = JSON.parse(myCache.get("admin-products"));
+    }
+    else {
+        products = await Product.find({});
+        // key value pair in cache is stored as a string
+        myCache.set("all-products", JSON.stringify(products));
+    }
+    return res.status(200).json({
+        success: true,
+        products,
+    });
+});
+//Revalidate on New,Update,Delete and New Order
+export const getSingleProduct = TryCatch(async (req, res, next) => {
+    let product;
+    const id = req.params.id;
+    if (myCache.has(`product-${id}`)) {
+        product = JSON.parse(myCache.get(`product-${id}`));
+    }
+    else {
+        product = await Product.findById(id);
+        if (!product)
+            return next(new ErrorHandler("Product not Found", 404));
+        myCache.set(`product-${id}`, JSON.stringify(product));
+    }
+    return res.status(200).json({
+        success: true,
+        product,
+    });
+});
 export const newProduct = TryCatch(
 // Request is a generic type, so we need to pass in the types for the body , params and query
 //  out of the these 3, here we have taken only the body
@@ -29,54 +104,14 @@ async (req, res, next) => {
         category: category.toLowerCase(),
         photo: photo.path,
     });
+    // invalidates the cache
+    // removes it from cache in simple language
+    // because the cache is outdated now
+    // passed true becoz there is (if check condition in the function)
+    await invalidatesCache({ product: true });
     return res.status(201).json({
         success: true,
         message: "Product created successfully",
-    });
-});
-export const getlatestProducts = TryCatch(async (req, res, next) => {
-    let products = [];
-    if (myCache.has("latest-product")) {
-        // (as string) means we are typecasting it to a string
-        // so if it comes undefined then it will be converted to a string
-        products = JSON.parse(myCache.get("latest-product"));
-    }
-    else {
-        // -1 means descending order
-        // 1 means ascending order
-        const products = await Product.find({}).sort({ createdAt: -1 }).limit(5);
-        // set the latest products in the cache
-        // we are storing the products in the cache as a string
-        // because we can only store strings in the cache
-        myCache.set("latest-product", JSON.stringify(products));
-    }
-    return res.status(200).json({
-        success: true,
-        products,
-    });
-});
-export const getAllCategories = TryCatch(async (req, res, next) => {
-    const categories = await Product.distinct("category");
-    return res.status(200).json({
-        success: true,
-        categories,
-    });
-});
-export const getAdminProducts = TryCatch(async (req, res, next) => {
-    const products = await Product.find({});
-    return res.status(200).json({
-        success: true,
-        products,
-    });
-});
-export const getSingleProduct = TryCatch(async (req, res, next) => {
-    const { id } = req.params;
-    const product = await Product.findById(id);
-    if (!product)
-        return next(new ErrorHandler("Product not Found", 404));
-    return res.status(200).json({
-        success: true,
-        product,
     });
 });
 export const updateProduct = TryCatch(async (req, res, next) => {
@@ -101,6 +136,11 @@ export const updateProduct = TryCatch(async (req, res, next) => {
     if (category)
         product.category = category;
     await product.save();
+    // invalidates the cache
+    // removes it from cache in simple language
+    // because the cache is outdated now
+    // passed true becoz there is (if check condition in the function)
+    await invalidatesCache({ product: true });
     return res.status(200).json({
         success: true,
         message: "Product created successfully",
@@ -114,6 +154,11 @@ export const deleteProduct = TryCatch(async (req, res, next) => {
         console.log("Product Photo deleted");
     });
     await Product.deleteOne();
+    // invalidates the cache
+    // removes it from cache in simple language
+    // because the cache is outdated now
+    // passed true becoz there is (if check condition in the function)
+    await invalidatesCache({ product: true });
     return res.status(200).json({
         success: true,
         message: "Product deleted successfully",
