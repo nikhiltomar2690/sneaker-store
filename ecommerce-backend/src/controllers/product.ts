@@ -8,6 +8,8 @@ import {
 import { Product } from "../models/product.js";
 import ErrorHandler from "../utils/utility-class.js";
 import { rm } from "fs";
+import { faker } from "@faker-js/faker";
+import { myCache } from "../app.js";
 
 export const newProduct = TryCatch(
   // Request is a generic type, so we need to pass in the types for the body , params and query
@@ -47,9 +49,21 @@ export const newProduct = TryCatch(
 );
 
 export const getlatestProducts = TryCatch(async (req, res, next) => {
-  // -1 means descending order
-  // 1 means ascending order
-  const products = await Product.find({}).sort({ createdAt: -1 }).limit(5);
+  let products = [];
+
+  if (myCache.has("latest-product")) {
+    // (as string) means we are typecasting it to a string
+    // so if it comes undefined then it will be converted to a string
+    products = JSON.parse(myCache.get("latest-product") as string);
+  } else {
+    // -1 means descending order
+    // 1 means ascending order
+    const products = await Product.find({}).sort({ createdAt: -1 }).limit(5);
+    // set the latest products in the cache
+    // we are storing the products in the cache as a string
+    // because we can only store strings in the cache
+    myCache.set("latest-product", JSON.stringify(products));
+  }
   return res.status(200).json({
     success: true,
     products,
@@ -186,3 +200,35 @@ export const getAllProducts = TryCatch(
     });
   }
 );
+
+// used faker library to generate random products
+// const generateRandomProducts = async (count: number = 10) => {
+//   const products = [];
+//   for (let i = 0; i < count; i++) {
+//     const product = {
+//       name: faker.commerce.productName(),
+//       photo: "uploads\bf59d9ca-d185-4fe6-94f2-0e6ecfcf7aeb.png",
+//       price: faker.commerce.price({ min: 1500, max: 80000, dec: 0 }),
+//       stock: faker.commerce.price({ min: 1, max: 100, dec: 0 }),
+//       category: faker.commerce.department(),
+//       createdAt: new Date(faker.date.past()),
+//       updatedAt: new Date(faker.date.recent()),
+//       __v: 0,
+//     };
+//     products.push(product);
+//   }
+//   await Product.create(products);
+//   console.log({ success: true });
+// };
+// generateRandomProducts(40);
+
+// const deleteRandomProducts = async (count: number = 10) => {
+//   const products = await Product.find({}).skip(2);
+
+//   for (let i = 0; i < products.length; i++) {
+//     let product = products[i];
+//     await product.deleteOne();
+//   }
+//   console.log({ success: true });
+// };
+// deleteRandomProducts(39);
