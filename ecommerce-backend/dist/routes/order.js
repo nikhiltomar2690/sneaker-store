@@ -1,0 +1,14 @@
+import express from "express";
+import { adminOnly } from "../middlewares/auth.js";
+import { allOrders, myOrders, newOrder } from "../controllers/order.js";
+const app = express();
+// route: /api/v1/order/new
+// description: create a new order
+app.post("/new", newOrder);
+// route: /api/v1/order/my
+// purpose: get all orders of a user
+app.get("/my", myOrders);
+// route: /api/v1/order/all
+// purpose: get all orders of all users
+app.get("/all", adminOnly, allOrders);
+export default app;
