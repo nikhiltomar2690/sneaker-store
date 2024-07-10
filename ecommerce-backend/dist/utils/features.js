@@ -10,7 +10,7 @@ export const connectDB = async (uri) => {
         .then((c) => console.log(`DB connected to ${c.connection.host}`))
         .catch((e) => console.log(e));
 };
-export const invalidatesCache = async ({ product, order, admin, }) => {
+export const invalidatesCache = async ({ product, order, admin, userId, orderId, productId, }) => {
     if (product) {
         const productKeys = [
             "latest-products",
@@ -20,13 +20,28 @@ export const invalidatesCache = async ({ product, order, admin, }) => {
         // one more is there i.e removal of ids from cache from singleproduct function
         // we have to clear all existing ids from cache
         // so we fetch only that field from the mongodb usign select function
-        const products = await Product.find({}).select("_id");
-        products.forEach((product) => {
-            productKeys.push(`product-${product._id}`);
-        });
+        // const products = await Product.find({}).select("_id");
+        // products.forEach((product) => {
+        //   productKeys.push();
+        // });
+        if (typeof productId === "string") {
+            productKeys.push(`product-${productId}`);
+        }
+        if (typeof productId === "object") {
+            productId.forEach((id) => {
+                productKeys.push(`product-${id}`);
+            });
+        }
+        // remove all the keys from the cache
         myCache.del(productKeys);
     }
     if (order) {
+        const orderKeys = [
+            "all-orders",
+            `my-orders-${userId}`,
+            `order-${orderId}`,
+        ];
+        myCache.del(orderKeys);
     }
     if (admin) {
     }

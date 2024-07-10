@@ -43,6 +43,10 @@ export type invalidatesCacheProps = {
   product?: boolean;
   order?: boolean;
   admin?: boolean;
+  userId?: string;
+  // used becoz it makes easy to delete the cache for orders
+  orderId?: string;
+  productId?: string | string[];
 };
 
 export type OrderItemType = {

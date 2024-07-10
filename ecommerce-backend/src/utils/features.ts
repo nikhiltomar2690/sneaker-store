@@ -2,6 +2,7 @@ import mongoose from "mongoose";
 import { invalidatesCacheProps, OrderItemType } from "../types/types.js";
 import { Product } from "../models/product.js";
 import { myCache } from "../app.js";
+import { Order } from "../models/order.js";
 
 // file to connect with db
 export const connectDB = async (uri: string) => {
@@ -17,6 +18,9 @@ export const invalidatesCache = async ({
   product,
   order,
   admin,
+  userId,
+  orderId,
+  productId,
 }: invalidatesCacheProps) => {
   if (product) {
     const productKeys: string[] = [
@@ -27,13 +31,28 @@ export const invalidatesCache = async ({
     // one more is there i.e removal of ids from cache from singleproduct function
     // we have to clear all existing ids from cache
     // so we fetch only that field from the mongodb usign select function
-    const products = await Product.find({}).select("_id");
-    products.forEach((product) => {
-      productKeys.push(`product-${product._id}`);
-    });
+    // const products = await Product.find({}).select("_id");
+    // products.forEach((product) => {
+    //   productKeys.push();
+    // });
+    if (typeof productId === "string") {
+      productKeys.push(`product-${productId}`);
+    }
+    if (typeof productId === "object") {
+      productId.forEach((id) => {
+        productKeys.push(`product-${id}`);
+      });
+    }
+    // remove all the keys from the cache
     myCache.del(productKeys);
   }
   if (order) {
+    const orderKeys: string[] = [
+      "all-orders",
+      `my-orders-${userId}`,
+      `order-${orderId}`,
+    ];
+    myCache.del(orderKeys);
   }
   if (admin) {
   }
