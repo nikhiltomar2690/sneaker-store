@@ -8,6 +8,7 @@ import morgan from "morgan"; // importing morgan for logging
 import userRoutes from "./routes/user.js";
 import productRoutes from "./routes/products.js";
 import orderRoute from "./routes/order.js";
+import paymentRoute from "./routes/payment.js";
 import { adminOnly } from "./middlewares/auth.js";
 config({
     path: "./.env",
@@ -33,6 +34,7 @@ app.get("/", (req, res) => {
 app.use("/api/v1/user", userRoutes);
 app.use("/api/v1/product", productRoutes);
 app.use("/api/v1/order", orderRoute);
+app.use("/api/v1/payment", paymentRoute);
 // since we are storing the images locally, we need to serve them statically
 // earlier they were being treated as api routes
 app.use("/uploads", express.static("uploads"));
