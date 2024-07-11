@@ -156,7 +156,7 @@ export const updateProduct = TryCatch(async (req, res, next) => {
   // removes it from cache in simple language
   // because the cache is outdated now
   // passed true becoz there is (if check condition in the function)
-  await invalidatesCache({ product: true });
+  await invalidatesCache({ product: true, productId: String(product._id) });
 
   return res.status(200).json({
     success: true,
@@ -165,6 +165,7 @@ export const updateProduct = TryCatch(async (req, res, next) => {
 });
 
 export const deleteProduct = TryCatch(async (req, res, next) => {
+  console.log("hi there delete");
   const product = await Product.findById(req.params.id);
   if (!product) return next(new ErrorHandler("Product not Found", 404));
 
@@ -177,7 +178,7 @@ export const deleteProduct = TryCatch(async (req, res, next) => {
   // removes it from cache in simple language
   // because the cache is outdated now
   // passed true becoz there is (if check condition in the function)
-  await invalidatesCache({ product: true });
+  await invalidatesCache({ product: true, productId: String(product._id) });
 
   return res.status(200).json({
     success: true,
