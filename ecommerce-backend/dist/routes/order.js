@@ -1,7 +1,7 @@
 import express from "express";
 import { adminOnly } from "../middlewares/auth.js";
 import { allOrders, deleteOrder, getSingleOrder, myOrders, newOrder, processOrder, } from "../controllers/order.js";
-const app = express();
+const app = express.Router();
 // route: /api/v1/order/new
 // description: create a new order
 app.post("/new", newOrder);

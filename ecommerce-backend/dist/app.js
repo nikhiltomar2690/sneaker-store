@@ -8,6 +8,7 @@ import morgan from "morgan"; // importing morgan for logging
 import userRoutes from "./routes/user.js";
 import productRoutes from "./routes/products.js";
 import orderRoute from "./routes/order.js";
+import { adminOnly } from "./middlewares/auth.js";
 config({
     path: "./.env",
 }); // calling the config function to read the .env file
@@ -23,6 +24,8 @@ export const myCache = new NodeCache();
 const app = express();
 app.use(express.json());
 app.use(morgan("dev"));
+app.use(errorMiddleware);
+app.use(adminOnly);
 app.get("/", (req, res) => {
     res.send("API working with /api/v1");
 });
@@ -33,7 +36,6 @@ app.use("/api/v1/order", orderRoute);
 // since we are storing the images locally, we need to serve them statically
 // earlier they were being treated as api routes
 app.use("/uploads", express.static("uploads"));
-app.use(errorMiddleware);
 app.listen(port, () => {
     console.log(`Server is running on port ${port}`);
 });

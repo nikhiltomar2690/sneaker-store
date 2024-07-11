@@ -1,0 +1,7 @@
+import express from "express";
+import { newCoupon } from "../controllers/payment.js";
+const app = express();
+// route - /api/v1/user/new
+// // usecase of this route: create a new user
+app.post("/coupon/new", newCoupon);
+export default app;
