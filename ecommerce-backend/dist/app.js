@@ -9,6 +9,7 @@ import userRoutes from "./routes/user.js";
 import productRoutes from "./routes/products.js";
 import orderRoute from "./routes/order.js";
 import paymentRoute from "./routes/payment.js";
+import dashboardRoute from "./routes/stats.js";
 config({
     path: "./.env",
 }); // calling the config function to read the .env file
@@ -32,6 +33,7 @@ app.use("/api/v1/user", userRoutes);
 app.use("/api/v1/product", productRoutes);
 app.use("/api/v1/order", orderRoute);
 app.use("/api/v1/payment", paymentRoute);
+app.use("/api/v1/dashboard", dashboardRoute);
 // since we are storing the images locally, we need to serve them statically
 // earlier they were being treated as api routes
 app.use("/uploads", express.static("uploads"));

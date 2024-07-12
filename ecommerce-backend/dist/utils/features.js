@@ -59,3 +59,5 @@ export const reduceStock = async (orderItems) => {
         }
     }
 };
+// here we are calculating the percentage of growth/decline of properties relative to last month
+export const calculatePercentage = (thisMonth, lastMonth) => { };
